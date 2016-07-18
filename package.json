@@ -1,0 +1,16 @@
+{
+  "name": "lampress",
+  "version": "1.0.0",
+  "description": "Quickly and easily run express applications in AWS Lambda",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rooftoptek/lampress.git"
+  },
+  "keywords": [
+    "express",
+    "lambda"
+  ],
+  "author": "Emmanuel Merali",
+  "license": "MIT"
+}
