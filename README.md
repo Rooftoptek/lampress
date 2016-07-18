@@ -1,8 +1,5 @@
 # lampress
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-
 Quickly and easily run express applications in AWS Lambda.
 
 ## Installation
