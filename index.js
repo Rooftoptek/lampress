@@ -16,34 +16,35 @@ function eventRequest(options) {
 eventRequest.prototype.send = function(body, callback) {
   var self = this;
   var data = undefined;
-  var isString = true;
   if (body) {
     if (typeof body ==='string') {
       data = body;
     }
     else {
-      isString = false;
       data = JSON.stringify(body);
     }
     this.options.headers['Content-Length'] = Buffer.byteLength(data);
   }
-  var socketRequest = http.request(this.options, function(res) {
-    res.setEncoding('utf8');
-    res.on('data', function(chunk) {
+  var request = http.request(this.options, function(response) {
+    var contentType = response.headers['content-type'];
+    var isJson = contentType && contentType.indexOf('application/json') === 0;
+    response.setEncoding('utf8');
+    response.on('data', function(chunk) {
       self.result+= chunk.toString('utf8');
     });
-    res.on('end', function() {
-      var result = isString ? self.result : JSON.parse(self.result);
+    response.on('end', function() {
+      var result = isJson ? JSON.parse(self.result) : self.result;
       callback(null, result);
     });
   });
-  socketRequest.on('error', function(err) {
+  request.on('error', function(error) {
+    console.log(error);
     callback(error);
   });
   if (data) {
-    socketRequest.write(data);
+    request.write(data);
   }
-  socketRequest.end();
+  request.end();
 };
 
 function eventHandler(sockPath, server) {
