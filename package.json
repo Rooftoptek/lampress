@@ -12,5 +12,8 @@
     "lambda"
   ],
   "author": "Emmanuel Merali",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "xmlhttprequest": "file:../node-XMLHttpRequest"
+  }
 }

@@ -7,45 +7,7 @@
  */
 
 var http = require('http');
-
-function eventRequest(options) {
-  this.options = options;
-  this.result = '';
-};
-
-eventRequest.prototype.send = function(body, callback) {
-  var self = this;
-  var data = undefined;
-  if (body) {
-    if (typeof body ==='string') {
-      data = body;
-    }
-    else {
-      data = JSON.stringify(body);
-    }
-    this.options.headers['Content-Length'] = Buffer.byteLength(data);
-  }
-  var request = http.request(this.options, function(response) {
-    var contentType = response.headers['content-type'];
-    var isJson = contentType && contentType.indexOf('application/json') === 0;
-    response.setEncoding('utf8');
-    response.on('data', function(chunk) {
-      self.result+= chunk.toString('utf8');
-    });
-    response.on('end', function() {
-      var result = isJson ? JSON.parse(self.result) : self.result;
-      callback(null, result);
-    });
-  });
-  request.on('error', function(error) {
-    console.log(error);
-    callback(error);
-  });
-  if (data) {
-    request.write(data);
-  }
-  request.end();
-};
+var XHR = require('xmlhttprequest').XMLHttpRequest;
 
 function eventHandler(sockPath, server) {
   this.sockPath = sockPath;
@@ -69,14 +31,52 @@ eventHandler.prototype.handle = function(event, context, callback) {
 };
 
 eventHandler.prototype.sendRequest = function() {
-  var reqopts = {
-    method: this.event.method,
-    path: this.event.path,
-    headers: this.event.headers,
-    socketPath: this.sockPath
+  var self = this;
+  var handled = false;
+  var request = new XHR();
+  request.onreadystatechange = function() {
+    var isJson;
+    if (request.readyState === request.HEADERS_RECEIVED && !handled) {
+      var contentType = request.getResponseHeader('Content-Type');
+      isJson = contentType && contentType.indexOf('application/json') === 0;      
+    }
+    if (request.readyState !== request.DONE || handled) {
+      return;
+    }
+    handled = true;
+    if (request.status === 0) {
+        self.callback('Unable to connect to the specified socket');      
+    }
+    else {
+      var response;
+      try {
+        response = isJson ? JSON.parse(request.responseText) : request.responseText;
+      } 
+      catch (error) {
+        self.callback(error.toString());
+      }
+      if (request.status >= 200 && request.status < 300) {
+      self.callback(null, response);
+    }
+      else {
+        self.callback(response);
+      }
+    }
+    }    
+  request.openOnSocket(this.event.method, this.event.path, this.sockPath, true);
+  for (var h in this.event.headers) {
+    request.setRequestHeader(h, this.event.headers[h]);
   }
-  var request = new eventRequest(reqopts);
-  request.send(this.event.body, this.callback);
+  var data;
+  if (this.event.body) {
+    if (typeof this.event.body ==='string') {
+      data = this.event.body;
+    }
+    else {
+      data = JSON.stringify(this.event.body);
+    }
+  }
+  request.send(data);
 };
 
 var lampress = function(sockPath, server) {
