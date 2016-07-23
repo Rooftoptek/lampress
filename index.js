@@ -7,7 +7,7 @@
  */
 
 var http = require('http');
-var XHR = require('xmlhttprequest').XMLHttpRequest;
+var XHR = require('xmlhttprequest-socket').XMLHttpRequest;
 
 function eventHandler(sockPath, server) {
   this.sockPath = sockPath;
