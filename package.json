@@ -1,6 +1,6 @@
 {
   "name": "lampress",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Quickly and easily run express applications in AWS Lambda",
   "author": {
     "name": "Emmanuel Merali"

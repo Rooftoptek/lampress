@@ -19,19 +19,17 @@ eventHandler.prototype.handle = function(event, context, callback) {
   var self = this;
   this.event = event;
   this.context = context;
-  this.callback = callback;
   if (this.serverReady) {
-    this.sendRequest();
+    this.sendRequest(callback);
   }
   else {
     this.server.on('listening', function() {
-      self.sendRequest();
+      self.sendRequest(callback);
     });
   }
 };
 
-eventHandler.prototype.sendRequest = function() {
-  var self = this;
+eventHandler.prototype.sendRequest = function(callback) {
   var handled = false;
   var request = new XHR();
   request.onreadystatechange = function() {
@@ -45,7 +43,7 @@ eventHandler.prototype.sendRequest = function() {
     }
     handled = true;
     if (request.status === 0) {
-        self.callback('Unable to connect to the specified socket');      
+        callback('Unable to connect to the specified socket');      
     }
     else {
       var response;
@@ -53,13 +51,13 @@ eventHandler.prototype.sendRequest = function() {
         response = isJson ? JSON.parse(request.responseText) : request.responseText;
       } 
       catch (error) {
-        self.callback(error.toString());
+        callback(error.toString());
       }
       if (request.status >= 200 && request.status < 300) {
-      self.callback(null, response);
+      callback(null, response);
     }
       else {
-        self.callback(response);
+        callback(response);
       }
     }
     }    
