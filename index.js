@@ -36,22 +36,22 @@ eventHandler.prototype.sendRequest = function(callback) {
     var isJson;
     if (request.readyState === request.HEADERS_RECEIVED && !handled) {
       var contentType = request.getResponseHeader('Content-Type');
-      isJson = contentType && contentType.indexOf('application/json') === 0;      
+      isJson = contentType && contentType.indexOf('application/json') === 0;
     }
     if (request.readyState !== request.DONE || handled) {
       return;
     }
     handled = true;
     if (request.status === 0) {
-        callback('Unable to connect to the specified socket');      
+        callback('Unable to connect to the specified socket');
     }
     else {
       var response;
       try {
-        response = isJson ? JSON.parse(request.responseText) : request.responseText;
-      } 
+        response = JSON.parse(request.responseText);
+      }
       catch (error) {
-        callback(error.toString());
+        response = request.responseText;
       }
       if (request.status >= 200 && request.status < 300) {
       callback(null, response);
@@ -60,7 +60,7 @@ eventHandler.prototype.sendRequest = function(callback) {
         callback(response);
       }
     }
-    }    
+    }
   request.openOnSocket(this.event.method, this.event.path, this.sockPath, true);
   for (var h in this.event.headers) {
     request.setRequestHeader(h, this.event.headers[h]);
