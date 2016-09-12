@@ -54,9 +54,12 @@ eventHandler.prototype.sendRequest = function(callback) {
         response = request.responseText;
       }
       if (request.status >= 200 && request.status < 300) {
-      callback(null, response);
-    }
+        callback(null, response);
+      }
       else {
+        if (typeof response === 'object') {
+          response = JSON.stringify(response)
+        }
         callback(response);
       }
     }
