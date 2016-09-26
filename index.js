@@ -86,6 +86,7 @@ var lampress = function(sockPath, server) {
     handler.serverReady = true;
   });
   return function(event, context, callback) {
+    global.Context = context;
     context.callbackWaitsForEmptyEventLoop = false;
     handler.handle(event, context, callback);
   };
