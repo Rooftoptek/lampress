@@ -80,14 +80,21 @@ eventHandler.prototype.sendRequest = function(callback) {
   request.send(data);
 };
 
-var lampress = function(sockPath, server) {
-  var handler = new eventHandler(sockPath, server);
-  server.on('listening', function() {
-    handler.serverReady = true;
-  });
+var lampress = function(sockPath, getServer) {
+  var server;
+  var handler;
   return function(event, context, callback) {
-    global.Context = context;
     context.callbackWaitsForEmptyEventLoop = false;
+    global.Context = context;
+    if (!server) {
+      server = getServer();
+    }
+    if (!handler) {
+      handler = new eventHandler(sockPath, server);
+      server.on('listening', function() {
+        handler.serverReady = true;
+      });
+    }
     handler.handle(event, context, callback);
   };
 };
