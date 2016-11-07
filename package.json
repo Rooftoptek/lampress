@@ -1,6 +1,6 @@
 {
   "name": "lampress",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Quickly and easily run express applications in AWS Lambda",
   "author": {
     "name": "Emmanuel Merali"
@@ -12,8 +12,5 @@
   },
   "keywords": ["express", "lambda"],
   "author": "Emmanuel Merali",
-  "license": "MIT",
-  "dependencies": {
-    "xmlhttprequest-socket": "^1.9.1"
-  }
+  "license": "MIT"
 }

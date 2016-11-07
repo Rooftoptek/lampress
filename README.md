@@ -11,7 +11,7 @@ $ npm install lampress
 ## API
 
 ```js
-exports.handler = lampress(port, server);
+exports.handler = lampress(app, callback);
 ```
 
 ## Examples
@@ -25,7 +25,6 @@ set of routes.
 var express = require('express');
 var bodyParser = require('body-parser');
 var lampress = require('./lampress');
-var port = '/tmp/local';
 
 var app = express();
  
@@ -45,11 +44,10 @@ app.delete('/', function (req, res) {
   res.send("Ok, deleted");
 });
 
-var server = app.listen(port, function() {
+exports.handler = lampress(app, function() {
   console.log("Server has started");
 }); 
 
-exports.handler = lampress(port, server);
 ```
 
 ## License
